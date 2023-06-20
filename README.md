@@ -12,7 +12,7 @@ This repo is just an attempt to read in and factorize a file of numbers.
 * tests/rsa-* - files with a number, and other with a list of numbers 
 
 ### Environment
-* Language: rust programming language <3
+* Language: rust programming language :heart:
 * OS: macOS Monterey 12.6.6 | Ubuntu 20.04 LTS
 
 ### Usage
