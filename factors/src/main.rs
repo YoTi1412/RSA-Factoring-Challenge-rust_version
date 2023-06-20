@@ -1,6 +1,6 @@
 use std::env;
 use std::fs::File;
-use std::io::Read;
+use std::io::{self, BufRead, BufReader};
 use std::time::{Instant, Duration};
 
 fn factorize(n: u64) -> String {
@@ -16,8 +16,21 @@ fn factorize(n: u64) -> String {
 }
 
 fn format_duration(duration: Duration) -> String {
-    let seconds = duration.as_secs_f64();
-    format!("{:.3}s", seconds)
+    format!("{:.3}s", duration.as_secs_f64())
+}
+
+fn process_file(file_path: &str) -> io::Result<()> {
+    let file = File::open(file_path)?;
+    let reader = BufReader::new(file);
+
+    for line in reader.lines() {
+        if let Ok(number) = line?.parse::<u64>() {
+            let factorization = factorize(number);
+            println!("{}", factorization);
+        }
+    }
+
+    Ok(())
 }
 
 fn main() {
@@ -28,27 +41,11 @@ fn main() {
     }
 
     let file_path = &args[1];
-    let mut file = match File::open(file_path) {
-        Ok(file) => file,
-        Err(err) => {
-            eprintln!("Error opening file: {}", err);
-            return;
-        }
-    };
-
-    let mut contents = String::new();
-    if let Err(err) = file.read_to_string(&mut contents) {
-        eprintln!("Error reading file: {}", err);
-        return;
-    }
-
     let start = Instant::now();
 
-    for line in contents.lines() {
-        if let Ok(number) = line.parse::<u64>() {
-            let factorization = factorize(number);
-            println!("{}", factorization);
-        }
+    if let Err(err) = process_file(file_path) {
+        eprintln!("Error processing file: {}", err);
+        return;
     }
 
     let duration = start.elapsed();
@@ -58,4 +55,3 @@ fn main() {
     println!("user    {}", elapsed_time);
     println!("sys     0.000s");
 }
-
